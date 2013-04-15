@@ -77,7 +77,7 @@ class MembershipsPlugin extends Gdn_Plugin {
        }
        if($Found){
            $Sender->UserData = Gdn::SQL()->Select('User.*')->From('User')->OrderBy('User.Name')->Where('Deleted',false)->Get();
-           $MemberList = Gdn::SQL()->Select('us.UserID, us.Name, us.Email')
+           $MemberList = Gdn::SQL()->Select('us.UserID, us.Name, us.Email, us.Photo')
                                    ->Select('ug.GroupID')
                                    ->OrderBy('us.Email', 'asc')
                                    ->Select('gr.Name', '', 'GroupName')
