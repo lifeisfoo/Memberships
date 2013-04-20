@@ -63,39 +63,43 @@ class MembershipsPlugin extends Gdn_Plugin {
        $Sender->MasterView = 'default';
 
        $GroupNameArg = $Sender->RequestArgs[0];
-
-       $Found = FALSE;
-       $GroupID;
-       $GroupName;
-       foreach ( $this->GetAllGroups() as $GName => $GID ){
-           if( strcmp($GroupNameArg, Gdn_Format::Url($GName)) == 0 ){
-               $Found = TRUE;
-               $GroupID = $GID;
-               $GroupName = $GName;
-               break;
-           }
-       }
-       if($Found){
-           $Sender->UserData = Gdn::SQL()->Select('User.*')->From('User')->OrderBy('User.Name')->Where('Deleted',false)->Get();
-           $MemberList = Gdn::SQL()->Select('us.UserID, us.Name, us.Email, us.Photo')
-                                   ->Select('ug.GroupID')
-                                   ->OrderBy('us.Email', 'asc')
-                                   ->Select('gr.Name', '', 'GroupName')
-                                   ->From('User us')
-                                   ->Where('us.Deleted', 0)
-                                   ->Where('gr.GroupID', $GroupID)
-                                   ->Join('UserGroup ug', 'us.UserID = ug.UserID', 'left')
-                                   ->Join('Group gr', 'ug.GroupID = gr.GroupID', 'left')
-                                   ->Get();
-           $Sender->GroupName = $GroupName;
-           $Sender->GroupMembers = $MemberList;
-           if( count($Sender->GroupMembers->Result()) > 0){
-               $Sender->Render(dirname(__FILE__) . DS . 'views' . DS . 'membershipslist.php');
-           }else{
-               $Sender->Render(dirname(__FILE__) . DS . 'views' . DS . 'empty_membershipslist.php');
-           }
+       if(!$GroupNameArg){
+           $Sender->GroupList = $this->GetAllGroups();
+           $Sender->Render(dirname(__FILE__) . DS . 'views' . DS . 'groups_list.php');
        }else{
-           throw NotFoundException();
+           $Found = FALSE;
+           $GroupID;
+           $GroupName;
+           foreach ( $this->GetAllGroups() as $GName => $GID ){
+               if( strcmp($GroupNameArg, Gdn_Format::Url($GName)) == 0 ){
+                   $Found = TRUE;
+                   $GroupID = $GID;
+                   $GroupName = $GName;
+                   break;
+               }
+           }
+           if($Found){
+               $Sender->UserData = Gdn::SQL()->Select('User.*')->From('User')->OrderBy('User.Name')->Where('Deleted',false)->Get();
+               $MemberList = Gdn::SQL()->Select('us.UserID, us.Name, us.Email, us.Photo')
+                                       ->Select('ug.GroupID')
+                                       ->OrderBy('us.Email', 'asc')
+                                       ->Select('gr.Name', '', 'GroupName')
+                                       ->From('User us')
+                                       ->Where('us.Deleted', 0)
+                                       ->Where('gr.GroupID', $GroupID)
+                                       ->Join('UserGroup ug', 'us.UserID = ug.UserID', 'left')
+                                       ->Join('Group gr', 'ug.GroupID = gr.GroupID', 'left')
+                                       ->Get();
+               $Sender->GroupName = $GroupName;
+               $Sender->GroupMembers = $MemberList;
+               if( count($Sender->GroupMembers->Result()) > 0){
+                   $Sender->Render(dirname(__FILE__) . DS . 'views' . DS . 'membershipslist.php');
+               }else{
+                   $Sender->Render(dirname(__FILE__) . DS . 'views' . DS . 'empty_membershipslist.php');
+               }
+           }else{
+               throw NotFoundException(T('Group'));
+           }
        }
    }
    
