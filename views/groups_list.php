@@ -3,7 +3,15 @@ if(!defined('APPLICATION')) die();
 
 ?>
 <div class="groups-list">
-<h1><?php T('Select a group'); ?></h1>
+<h1><?php echo T('Select a group'); ?></h1>
+<p>
+<?php
+$Description = T('Groups list description', NULL);
+if ($Description){
+    echo $Description;
+}
+?>
+</p>
 <ul>
 <?php
 foreach ( $this->GroupList as $GName => $GID ){

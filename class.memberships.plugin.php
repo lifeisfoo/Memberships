@@ -40,7 +40,7 @@ class MembershipsPlugin extends Gdn_Plugin {
    public function CategoriesController_AfterRenderAsset_Handler($Sender) {
        if(strcmp(GetValue("AssetName", $Sender->EventArguments), "Panel") == 0){
            echo '<div class="Box BoxGroups">';
-           echo '<h4>' . T('Groups')  . '</h4>';
+           echo '<h4><a href="' . Url('groups') . '">' . T('Groups')  . '</a></h4>';
            echo '<ul class="PanelInfo GroupsPanel">';
            $GroupList = Gdn::SQL()->Select('*')
                                   ->From('Group gr')
